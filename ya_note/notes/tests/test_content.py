@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from notes.models import Note
@@ -12,7 +12,11 @@ class TestRoutes(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.author = User.objects.create(username='author')
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
         cls.auth_user = User.objects.create(username='auth_user')
+        cls.auth_user_client = Client()
+        cls.auth_user_client.force_login(cls.auth_user)
         cls.note = Note.objects.create(
             title='Заголовок',
             text='Текст',
@@ -20,24 +24,29 @@ class TestRoutes(TestCase):
         )
 
     def test_notes_list_for_different_users(self):
+        '''Отдельная заметка передаётся на страницу со списком заметок
+        в списке object_list в словаре context.
+            В список заметок одного пользователя не попадают заметки
+        другого пользователя.'''
         users_statuses = (
-            (self.author, True),
-            (self.auth_user, False),
+            (self.author_client, True),
+            (self.auth_user_client, False),
         )
         for user, note_in_list in users_statuses:
-            self.client.force_login(user)
-            url = reverse('notes:list')
-            response = self.client.get(url)
-            object_list = response.context['object_list']
-            assert (self.note in object_list) is note_in_list
+            with self.subTest():
+                url = reverse('notes:list')
+                response = user.get(url)
+                object_list = response.context['object_list']
+                self.assertIs((self.note in object_list), note_in_list)
 
     def test_pages_contains_form(self):
-        self.client.force_login(self.author)
+        '''На страницы создания и редактирования заметки передаются формы.'''
         urls = (
             ('notes:add', None),
             ('notes:edit', (self.note.slug,)),
         )
         for name, args in urls:
-            url = reverse(name, args=args)
-            response = self.client.get(url)
-            assert 'form' in response.context
+            with self.subTest():
+                url = reverse(name, args=args)
+                response = self.author_client.get(url)
+                self.assertIn('form', response.context)
