@@ -30,7 +30,6 @@ class TestRoutes(TestCase):
 
     def test_user_can_create_note(self):
         """Залогиненный пользователь может создать заметку."""
-
         url = reverse('notes:add')
         response = self.author_client.post(url, data=self.data)
         self.assertRedirects(response, reverse('notes:success'))
@@ -43,7 +42,6 @@ class TestRoutes(TestCase):
 
     def test_anonymous_user_cant_create_note(self):
         """Анонимный пользователь не может создать заметку."""
-
         url = reverse('notes:add')
         response = self.client.post(url, self.data)
         login_url = reverse('users:login')
@@ -53,7 +51,6 @@ class TestRoutes(TestCase):
 
     def test_not_unique_slug(self):
         """Невозможно создать две заметки с одинаковым slug."""
-
         self.note = Note.objects.create(
             title='Заголовок',
             text='Текст',
@@ -71,8 +68,8 @@ class TestRoutes(TestCase):
 
     def test_empty_slug(self):
         """Если при создании заметки не заполнен slug, то он формируется
-        автоматически, с помощью функции pytils.translit.slugify"""
-
+        автоматически, с помощью функции pytils.translit.slugify
+        """
         url = reverse('notes:add')
         self.data.pop('slug')
         response = self.author_client.post(url, self.data)
@@ -84,7 +81,6 @@ class TestRoutes(TestCase):
 
     def test_author_can_delete_note(self):
         """Пользователь может удалять свои заметки."""
-
         self.note = Note.objects.create(
             title='Заголовок',
             text='Текст',
@@ -97,7 +93,6 @@ class TestRoutes(TestCase):
 
     def test_other_user_cant_delete_note(self):
         """Пользователь не может удалять чужие заметки."""
-
         self.note = Note.objects.create(
             title='Заголовок',
             text='Текст',
@@ -110,7 +105,6 @@ class TestRoutes(TestCase):
 
     def test_author_can_edit_note(self):
         """Пользователь может редактировать свои заметки."""
-
         self.note = Note.objects.create(
             title='Заголовок',
             text='Текст',
@@ -126,7 +120,6 @@ class TestRoutes(TestCase):
 
     def test_other_user_cant_edit_note(self):
         """Пользователь не может редактировать чужие заметки."""
-        
         self.note = Note.objects.create(
             title='Заголовок',
             text='Текст',
