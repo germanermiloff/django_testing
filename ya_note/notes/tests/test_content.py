@@ -28,6 +28,7 @@ class TestRoutes(TestCase):
         в списке object_list в словаре context.
         В список заметок одного пользователя не попадают заметки
         другого пользователя."""
+
         users_statuses = (
             (self.author_client, True),
             (self.auth_user_client, False),
@@ -41,6 +42,7 @@ class TestRoutes(TestCase):
 
     def test_pages_contains_form(self):
         """На страницы создания и редактирования заметки передаются формы."""
+        
         urls = (
             ('notes:add', None),
             ('notes:edit', (self.note.slug,)),
