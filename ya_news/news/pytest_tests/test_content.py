@@ -16,8 +16,7 @@ def test_news_count(client, list_news):
 
 @pytest.mark.django_db
 def test_news_order(client, list_news):
-    """
-    Новости отсортированы от самой свежей к самой старой.
+    """Новости отсортированы от самой свежей к самой старой.
     Свежие новости в начале списка.
     """
     url = reverse('news:home')
